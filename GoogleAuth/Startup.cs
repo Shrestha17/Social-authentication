@@ -14,6 +14,9 @@ using GoogleAuth.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GoogleAuth
 {
@@ -54,8 +57,25 @@ namespace GoogleAuth
             });
 
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie("ExternalCookie");
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                //options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.AddAuthentication(options=>
+            {
+                options.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie("ExternalCookie");
+
+
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new RequireHttpsAttribute());
+            //});
+
 
             //     services.AddAuthentication()
             //.AddCookie(options =>
@@ -97,13 +117,20 @@ namespace GoogleAuth
                 //do work after the rest of the pipeline has run     
             });
 
+            //var options = new RewriteOptions().AddRedirectToHttps(301, 8695);
 
+            //var options = new RewriteOptions().AddRedirectToHttpsPermanent();
+
+
+
+            //app.UseRewriter(options);
 
 
 
             app.UseStaticFiles();
 
             app.UseAuthentication();
+            app.UseCookiePolicy();
 
             app.UseMvc(routes =>
             {

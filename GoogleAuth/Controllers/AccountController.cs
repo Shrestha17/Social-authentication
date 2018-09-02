@@ -263,7 +263,7 @@ namespace GoogleAuth.Controllers
             var authenticationProperties = new AuthenticationProperties
             {
                 //RedirectUri = Url.Action("Index", "Home")
-                RedirectUri= Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl })
+                RedirectUri= Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl })             
             };
 
             return Challenge(authenticationProperties, provider);
